@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tom&Fem — Ton style, tes règles</title>
+  <style>
+:root {
+  --bg: #16121f;
+  --bg-soft: #211a30;
+  --panel: #2a2138;
+  --rose: #ff8fb8;
+  --bleu: #8fc7ff;
+  --violet: #a78bfa;
+  --text: #f3eefc;
+  --muted: #b7a9d4;
+  --danger: #ff6b81;
+  --ok: #5ee6a8;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: radial-gradient(circle at 20% 0%, #241a3a 0%, var(--bg) 60%);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+#app {
+  width: 100%;
+  max-width: 430px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ===== Topbar ===== */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 12px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: linear-gradient(to bottom, var(--bg) 70%, transparent);
+}
+
+.brand {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+.brand span {
+  background: linear-gradient(90deg, var(--rose), var(--bleu));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.tabs { display: flex; gap: 6px; }
+.tab {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tab.active { background: var(--panel); color: var(--text); }
+.count {
+  display: inline-block;
+  min-width: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--rose), var(--bleu));
+  color: #1c1526;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+/* ===== Deck ===== */
+main { flex: 1; display: flex; flex-direction: column; }
+
+.view { display: none; flex: 1; flex-direction: column; padding: 0 16px 16px; }
+.view.active { display: flex; }
+
+.card-stack {
+  position: relative;
+  height: 520px;
+  max-height: calc(100vh - 220px);
+  margin-top: 8px;
+}
+
+.card {
+  position: absolute;
+  inset: 0;
+  background: var(--panel);
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.card.back { transform: scale(0.94) translateY(8px); pointer-events: none; }
+
+.card-banner {
+  height: 55%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4.5rem;
+  position: relative;
+}
+.card-banner .emoji-bg {
+  font-size: 7rem;
+  filter: saturate(1.1);
+}
+.vibe-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1c1526;
+}
+.vibe-femboy { background: var(--rose); }
+.vibe-tomboy { background: var(--bleu); }
+.vibe-fluide {
+  background: linear-gradient(90deg, var(--rose), var(--bleu));
+}
+
+.card-info { padding: 18px 20px; }
+.card-name { font-size: 1.35rem; font-weight: 800; }
+.card-name small { font-size: 0.9rem; color: var(--muted); font-weight: 500; }
+.card-bio {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.tag {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(167, 139, 250, 0.14);
+  color: var(--violet);
+  border: 1px solid rgba(167, 139, 250, 0.25);
+}
+.tag.city { background: rgba(143, 199, 255, 0.12); color: var(--bleu); border-color: rgba(143, 199, 255, 0.25); }
+
+/* Stamps like/nope */
+.stamp {
+  position: absolute;
+  top: 24px;
+  padding: 6px 18px;
+  border-radius: 10px;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  opacity: 0;
+  transform: rotate(-14deg);
+  border: 4px solid;
+  z-index: 5;
+}
+.stamp.left { left: 20px; }
+.stamp.right { right: 20px; transform: rotate(14deg); }
+.stamp.like { color: var(--ok); border-color: var(--ok); }
+.stamp.nope { color: var(--danger); border-color: var(--danger); }
+.card.choice .stamp { opacity: 1; }
+
+/* Actions */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 18px;
+}
+.action {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s, box-shadow 0.15s;
+  color: var(--text);
+}
+.action:hover { transform: scale(1.1); }
+.action.small { width: 48px; height: 48px; font-size: 1.2rem; }
+.like {
+  background: linear-gradient(135deg, #ff6ea9, #ff8fb8);
+  box-shadow: 0 6px 20px rgba(255, 110, 169, 0.4);
+}
+.nope {
+  background: var(--bg-soft);
+  border: 1px solid rgba(255, 107, 129, 0.4);
+  color: var(--danger);
+}
+.rewind {
+  background: var(--bg-soft);
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  color: var(--violet);
+  width: 48px;
+  height: 48px;
+  font-size: 1.2rem;
+  align-self: center;
+}
+.hint {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-top: 14px;
+  opacity: 0.8;
+}
+
+/* ===== Matchs ===== */
+.view-title { font-size: 1.2rem; margin: 14px 4px; }
+.match-list { display: flex; flex-direction: column; gap: 10px; padding-bottom: 24px; }
+.match-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--panel);
+  border-radius: 16px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+.match-emoji {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  flex-shrink: 0;
+}
+.match-item .mi-name { font-weight: 700; }
+.match-item .mi-sub { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+.empty {
+  text-align: center;
+  color: var(--muted);
+  margin-top: 40px;
+  line-height: 1.6;
+}
+
+/* ===== Modales ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+.modal[hidden] { display: none; }
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 7, 18, 0.75);
+  backdrop-filter: blur(4px);
+}
+.modal-card {
+  position: relative;
+  background: var(--bg-soft);
+  border-radius: 24px;
+  width: min(92vw, 400px);
+  max-height: 86vh;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 20px;
+}
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text);
+  font-size: 1rem;
+  cursor: pointer;
+}
+.modal-actions { display: flex; justify-content: center; gap: 16px; margin-top: 16px; }
+
+.profile-full .card-banner { height: 240px; }
+.profile-full .card-bio {
+  display: block;
+  -webkit-line-clamp: unset;
+}
+.profile-meta {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.profile-meta strong { color: var(--text); display: block; font-size: 0.88rem; }
+
+/* Match screen */
+.match-screen {
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(160deg, #2b1a3e, #1c2440);
+  border-radius: 24px;
+  padding: 40px 28px 32px;
+  width: min(90vw, 360px);
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 60px rgba(167, 139, 250, 0.3);
+}
+.match-spark { font-size: 2rem; margin-bottom: 6px; }
+.match-title {
+  font-size: 1.7rem;
+  background: linear-gradient(90deg, var(--rose), var(--bleu));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.match-sub { color: var(--muted); margin: 8px 0 20px; font-size: 0.9rem; }
+.match-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 22px;
+  text-align: left;
+}
+.match-card .mc-emoji {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+.match-card .mc-name { font-weight: 700; }
+.match-card .mc-vibe { font-size: 0.78rem; color: var(--muted); }
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(90deg, var(--rose), var(--violet), var(--bleu));
+  color: #1c1526;
+}
+
+/* Animation sortie de carte */
+.card.fly-left { transform: translateX(-130%) rotate(-22deg) !important; opacity: 0; }
+.card.fly-right { transform: translateX(130%) rotate(22deg) !important; opacity: 0; }
+
+@media (max-width: 380px) {
+  .card-stack { height: 460px; }
+}
+
+</style>
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">tom<span>&amp;</span>fem</div>
+      <nav class="tabs">
+        <button class="tab active" data-tab="deck">Découvrir</button>
+        <button class="tab" data-tab="matches">Matchs <span id="matchCount" class="count">0</span></button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Écran Découvrir -->
+      <section id="deck" class="view active">
+        <div id="cardStack" class="card-stack"></div>
+        <div class="actions">
+          <button id="btnNope" class="action nope" title="Passer">✕</button>
+          <button id="btnRewind" class="action rewind" title="Annuler">↩</button>
+          <button id="btnLike" class="action like" title="Like">♥</button>
+        </div>
+        <p class="hint">Glisse la carte ou utilise les boutons · clique sur la carte pour voir le profil</p>
+      </section>
+
+      <!-- Écran Matchs -->
+      <section id="matches" class="view">
+        <h2 class="view-title">Tes matchs</h2>
+        <div id="matchList" class="match-list"></div>
+        <p id="emptyMatches" class="empty">Aucun match pour l'instant.<br>Likes les profils qui te plaisent 💫</p>
+      </section>
+    </main>
+
+    <!-- Modale profil -->
+    <div id="profileModal" class="modal" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card">
+        <button class="modal-close" data-close>✕</button>
+        <div id="profileContent"></div>
+        <div class="modal-actions">
+          <button class="action nope small" data-act="nope">✕</button>
+          <button class="action like small" data-act="like">♥</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Écran Match ! -->
+    <div id="matchModal" class="modal" hidden>
+      <div class="modal-backdrop"></div>
+      <div class="match-screen">
+        <div class="match-spark">✦</div>
+        <h2 class="match-title">C'est un match !</h2>
+        <p class="match-sub">Vous vous êtes likés mutuellement</p>
+        <div id="matchCard" class="match-card"></div>
+        <button id="keepSwiping" class="btn-primary">Continuer à découvrir</button>
+      </div>
+    </div>
+
+    <!-- Écran fin de deck -->
+    <div id="endModal" class="modal" hidden>
+      <div class="modal-backdrop"></div>
+      <div class="match-screen">
+        <h2 class="match-title">Tu as tout vu !</h2>
+        <p class="match-sub">Reviens plus tard pour de nouveaux profils</p>
+        <button id="restartDeck" class="btn-primary">Recommencer</button>
+      </div>
+    </div>
+  </div>
+  <script>
+/* ===== Données de démo ===== */
+const PROFILES = [
+  {
+    id: 1, name: "Léo", age: 23, vibe: "femboy", emoji: "🧷",
+    color: "linear-gradient(135deg, #ffb3d1, #ffd6e4)", accent: "#ff8fb8",
+    city: "Lyon", pronouns: "il/lui", bio: "Skirt + sneakers, c'est ma signature. Je collectionne les vernis pastel et je fais des playlists pour chaque humeur. À la recherche de quelqu'un qui aime les boulangeries le dimanche matin.",
+    tags: ["Mode", "K-pop", "Vernis pastel", "Cafés", "Playlists"]
+  },
+  {
+    id: 2, name: "Nour", age: 26, vibe: "tomboy", emoji: "🏀",
+    color: "linear-gradient(135deg, #9ecbff, #c9e4ff)", accent: "#8fc7ff",
+    city: "Paris", pronouns: "iel", bio: "Basket le matin, skate le soir. Je code des jeux indés le week-end. Si tu sais faire des crêpes, c'est déjà un bon début.",
+    tags: ["Skate", "Jeux indés", "Basket", "Bande dessinée", "Crêpes"]
+  },
+  {
+    id: 3, name: "Ada", age: 22, vibe: "tomboy", emoji: "🎸",
+    color: "linear-gradient(135deg, #a8c8ff, #d4e2ff)", accent: "#8fb4ff",
+    city: "Bordeaux", pronouns: "elle", bio: "Guitariste dans un groupe de shoegaze. Coupe courte, chemises oversize, et un faible pour les marchés aux puces à 6h.",
+    tags: ["Shoegaze", "Vintage", "Tatouages", "Marchés aux puces"]
+  },
+  {
+    id: 4, name: "Milo", age: 25, vibe: "fluide", emoji: "🌙",
+    color: "linear-gradient(135deg, #d3b8ff, #a3ccff)", accent: "#b9a3ff",
+    city: "Nantes", pronouns: "iel", bio: "Mon style change selon la météo de mon cœur. Bénévole dans une assoc' LGBTQ+, grand fan de cinéma d'animation japonaise.",
+    tags: ["Animation JP", "Assoc'", "Pâtisserie", "Thrillers", "Thé"]
+  },
+  {
+    id: 5, name: "Camille", age: 24, vibe: "femboy", emoji: "🪞",
+    color: "linear-gradient(135deg, #ffc4d8, #ffe3ee)", accent: "#ff9ec4",
+    city: "Lille", pronouns: "il", bio: "Je fais du threading (les perles, pas le spa… quoique). Maman m'a appris à coudre, maintenant je customise tout mon dressing.",
+    tags: ["Perlage", "Couture", "Chill-hop", "Boba tea"]
+  },
+  {
+    id: 6, name: "Jules", age: 27, vibe: "tomboy", emoji: "🛹",
+    color: "linear-gradient(135deg, #93c5fd, #bcdffb)", accent: "#7fb8f5",
+    city: "Toulouse", pronouns: "elle", bio: "Plombière le jour, DJ le samedi. On dit que je fixe les fuites et que je fais fuir les cœurs (désolée, ma pire blague).",
+    tags: ["DJ set", "Skatepark", "Mécanique", "Techno", "Puns"]
+  },
+  {
+    id: 7, name: "Sacha", age: 21, vibe: "fluide", emoji: "🌟",
+    color: "linear-gradient(135deg, #c9a7ff, #9ac6ff)", accent: "#b08cf5",
+    city: "Rennes", pronouns: "iel/elle", bio: "Étudiant·e en art, toujours avec du scotch washi sur les mains. Je dessine des portraits de gens dans le métro.",
+    tags: ["Dessin", "Washi tape", "Métro", "Poésie", "Mangas"]
+  },
+  {
+    id: 8, name: "Elias", age: 28, vibe: "femboy", emoji: "🌸",
+    color: "linear-gradient(135deg, #ffb0cc, #ffd9e7)", accent: "#ff87b6",
+    city: "Strasbourg", pronouns: "il/lui", bio: "Fleuriste. Oui, je peux faire un bouquet qui dit 'je t'aime bien sans faire trop'. Jardinage sur mon balcon minuscule.",
+    tags: ["Fleurs", "Jardinage", "Photos Polaroid", "Marchés"]
+  }
+];
+
+const VIBE_LABEL = { femboy: "Femboy", tomboy: "Tomboy", fluide: "Fluide" };
+
+/* ===== État ===== */
+let queue = [];
+let matches = [];
+let rewindStack = [];
+let currentIdx = 0;
+const LIKED_BACK = new Set([1, 4, 6, 7]); // profils qui likent en retour
+
+/* ===== Init ===== */
+const cardStack = document.getElementById("cardStack");
+const matchCountEl = document.getElementById("matchCount");
+const matchListEl = document.getElementById("matchList");
+const emptyEl = document.getElementById("emptyMatches");
+
+function startDeck() {
+  queue = [...PROFILES];
+  currentIdx = 0;
+  renderStack();
+}
+
+function renderStack() {
+  cardStack.innerHTML = "";
+  const remaining = queue.slice(currentIdx);
+  const toShow = remaining.slice(0, 2).reverse();
+  toShow.forEach((p, i) => {
+    const card = buildCard(p);
+    if (i < toShow.length - 1) card.classList.add("back");
+    cardStack.appendChild(card);
+  });
+  if (remaining.length === 0) showEnd();
+}
+
+function buildCard(p) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.dataset.id = p.id;
+  card.innerHTML = `
+    <div class="card-banner" style="background:${p.color}">
+      <span class="emoji-bg">${p.emoji}</span>
+      <span class="vibe-badge vibe-${p.vibe}">${VIBE_LABEL[p.vibe]}</span>
+      <span class="stamp left nope">NOPE</span>
+      <span class="stamp right like">LIKE</span>
+    </div>
+    <div class="card-info">
+      <div class="card-name">${p.name}, ${p.age} <small>· ${p.city}</small></div>
+      <p class="card-bio">${p.bio}</p>
+      <div class="tags">${p.tags.map(t => `<span class="tag">${t}</span>`).join("")}<span class="tag city">${p.pronouns}</span></div>
+    </div>`;
+  attachDrag(card, p);
+  card.addEventListener("click", (e) => {
+    if (card.dataset.dragged) return;
+    openProfile(p);
+  });
+  return card;
+}
+
+/* ===== Drag ===== */
+function attachDrag(card, p) {
+  let startX = 0, dx = 0, dragging = false;
+
+  card.addEventListener("pointerdown", (e) => {
+    dragging = true;
+    startX = e.clientX;
+    card.dataset.dragged = "";
+    card.setPointerCapture(e.pointerId);
+  });
+  card.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    dx = e.clientX - startX;
+    card.style.transition = "none";
+    card.style.transform = `translateX(${dx}px) rotate(${dx / 18}deg)`;
+    const like = card.querySelector(".stamp.like");
+    const nope = card.querySelector(".stamp.nope");
+    like.style.opacity = Math.max(0, dx / 110);
+    nope.style.opacity = Math.max(0, -dx / 110);
+    if (Math.abs(dx) > 8) card.dataset.dragged = "1";
+  });
+  card.addEventListener("pointerup", () => {
+    dragging = false;
+    card.style.transition = "";
+    if (dx > 110) decide("like", p, card);
+    else if (dx < -110) decide("nope", p, card);
+    else {
+      card.style.transform = "";
+      card.querySelector(".stamp.like").style.opacity = 0;
+      card.querySelector(".stamp.nope").style.opacity = 0;
+    }
+    dx = 0;
+  });
+}
+
+/* ===== Décision ===== */
+function decide(action, p, cardEl) {
+  rewindStack.push({ profile: p, liked: action === "like" });
+  if (action === "like" && LIKED_BACK.has(p.id)) {
+    registerMatch(p);
+    if (cardEl) {
+      cardEl.classList.add("choice", "fly-right");
+      setTimeout(() => { currentIdx++; renderStack(); showMatch(p); }, 250);
+    } else {
+      currentIdx++; renderStack(); showMatch(p);
+    }
+    return;
+  }
+  const top = cardEl || cardStack.querySelector(".card:not(.back)");
+  if (top) {
+    top.classList.add("choice", action === "like" ? "fly-right" : "fly-left");
+    setTimeout(() => { currentIdx++; renderStack(); }, 250);
+  } else {
+    currentIdx++; renderStack();
+  }
+}
+
+function registerMatch(p) {
+  matches.push(p);
+  matchCountEl.textContent = matches.length;
+  emptyEl.style.display = "none";
+  renderMatchList();
+}
+
+function renderMatchList() {
+  matchListEl.innerHTML = "";
+  matches.forEach(p => {
+    const item = document.createElement("div");
+    item.className = "match-item";
+    item.innerHTML = `
+      <div class="match-emoji" style="background:${p.color}">${p.emoji}</div>
+      <div>
+        <div class="mi-name">${p.name}, ${p.age}</div>
+        <div class="mi-sub">${VIBE_LABEL[p.vibe]} · ${p.city}</div>
+      </div>`;
+    item.addEventListener("click", () => openProfile(p));
+    matchListEl.appendChild(item);
+  });
+}
+
+/* ===== Modales ===== */
+const profileModal = document.getElementById("profileModal");
+const matchModal = document.getElementById("matchModal");
+const endModal = document.getElementById("endModal");
+
+function openProfile(p) {
+  document.getElementById("profileContent").innerHTML = `
+    <div class="profile-full">
+      <div class="card-banner" style="background:${p.color}; border-radius: 24px 24px 0 0;">
+        <span class="emoji-bg">${p.emoji}</span>
+        <span class="vibe-badge vibe-${p.vibe}">${VIBE_LABEL[p.vibe]}</span>
+      </div>
+      <div class="card-info">
+        <div class="card-name">${p.name}, ${p.age}</div>
+        <p class="card-bio">${p.bio}</p>
+        <div class="profile-meta">
+          <div><strong>Ville</strong>${p.city}</div>
+          <div><strong>Pronoms</strong>${p.pronouns}</div>
+          <div><strong>Vibe</strong>${VIBE_LABEL[p.vibe]}</div>
+          <div><strong>Âge</strong>${p.age} ans</div>
+        </div>
+        <div class="tags">${p.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>
+      </div>
+    </div>`;
+  profileModal.hidden = false;
+  profileModal.querySelector('[data-act="like"]').onclick = () => { closeModals(); decide("like", p); };
+  profileModal.querySelector('[data-act="nope"]').onclick = () => { closeModals(); decide("nope", p); };
+}
+
+function showMatch(p) {
+  document.getElementById("matchCard").innerHTML = `
+    <div class="mc-emoji" style="background:${p.color}">${p.emoji}</div>
+    <div>
+      <div class="mc-name">${p.name}, ${p.age}</div>
+      <div class="mc-vibe">${VIBE_LABEL[p.vibe]} · ${p.city}</div>
+    </div>`;
+  matchModal.hidden = false;
+}
+
+function showEnd() { endModal.hidden = false; }
+function closeModals() {
+  profileModal.hidden = true;
+  matchModal.hidden = true;
+}
+
+document.querySelectorAll("[data-close]").forEach(el =>
+  el.addEventListener("click", () => { profileModal.hidden = true; })
+);
+document.getElementById("keepSwiping").addEventListener("click", () => { matchModal.hidden = true; });
+document.getElementById("restartDeck").addEventListener("click", () => {
+  endModal.hidden = true;
+  currentIdx = 0;
+  rewindStack = [];
+  renderStack();
+});
+
+/* ===== Boutons ===== */
+document.getElementById("btnLike").addEventListener("click", () => {
+  const p = queue[currentIdx];
+  if (p) decide("like", p);
+});
+document.getElementById("btnNope").addEventListener("click", () => {
+  const p = queue[currentIdx];
+  if (p) decide("nope", p);
+});
+document.getElementById("btnRewind").addEventListener("click", () => {
+  if (rewindStack.length === 0 || currentIdx === 0) return;
+  rewindStack.pop();
+  currentIdx--;
+  if (matches.length && queue[currentIdx]) {
+    const p = queue[currentIdx];
+    const idx = matches.findIndex(m => m.id === p.id);
+    if (idx > -1 && rewindStack.length && !rewindStack.some(r => r.profile.id === p.id && r.liked)) {
+      matches.splice(idx, 1);
+      matchCountEl.textContent = matches.length;
+      if (!matches.length) emptyEl.style.display = "";
+      renderMatchList();
+    }
+  }
+  renderStack();
+});
+
+/* ===== Onglets ===== */
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    tab.classList.add("active");
+    document.getElementById(tab.dataset.tab).classList.add("active");
+  });
+});
+
+startDeck();
+
+</script>
+</body>
+</html>
