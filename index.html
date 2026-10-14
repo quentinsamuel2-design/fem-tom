@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tom&Fem — Ton style, tes règles</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">tom<span>&amp;</span>fem</div>
+      <nav class="tabs">
+        <button class="tab active" data-tab="deck">Découvrir</button>
+        <button class="tab" data-tab="matches">Matchs <span id="matchCount" class="count">0</span></button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Écran Découvrir -->
+      <section id="deck" class="view active">
+        <div id="cardStack" class="card-stack"></div>
+        <div class="actions">
+          <button id="btnNope" class="action nope" title="Passer">✕</button>
+          <button id="btnRewind" class="action rewind" title="Annuler">↩</button>
+          <button id="btnLike" class="action like" title="Like">♥</button>
+        </div>
+        <p class="hint">Glisse la carte ou utilise les boutons · clique sur la carte pour voir le profil</p>
+      </section>
+
+      <!-- Écran Matchs -->
+      <section id="matches" class="view">
+        <h2 class="view-title">Tes matchs</h2>
+        <div id="matchList" class="match-list"></div>
+        <p id="emptyMatches" class="empty">Aucun match pour l'instant.<br>Likes les profils qui te plaisent 💫</p>
+      </section>
+    </main>
+
+    <!-- Modale profil -->
+    <div id="profileModal" class="modal" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-card">
+        <button class="modal-close" data-close>✕</button>
+        <div id="profileContent"></div>
+        <div class="modal-actions">
+          <button class="action nope small" data-act="nope">✕</button>
+          <button class="action like small" data-act="like">♥</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Écran Match ! -->
+    <div id="matchModal" class="modal" hidden>
+      <div class="modal-backdrop"></div>
+      <div class="match-screen">
+        <div class="match-spark">✦</div>
+        <h2 class="match-title">C'est un match !</h2>
+        <p class="match-sub">Vous vous êtes likés mutuellement</p>
+        <div id="matchCard" class="match-card"></div>
+        <button id="keepSwiping" class="btn-primary">Continuer à découvrir</button>
+      </div>
+    </div>
+
+    <!-- Écran fin de deck -->
+    <div id="endModal" class="modal" hidden>
+      <div class="modal-backdrop"></div>
+      <div class="match-screen">
+        <h2 class="match-title">Tu as tout vu !</h2>
+        <p class="match-sub">Reviens plus tard pour de nouveaux profils</p>
+        <button id="restartDeck" class="btn-primary">Recommencer</button>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
